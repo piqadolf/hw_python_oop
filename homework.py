@@ -1,4 +1,4 @@
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from typing import ClassVar
 
 
@@ -21,6 +21,11 @@ class InfoMessage:
     def get_message(self) -> str:
         message: str = (self.MESSAGE.format(**asdict(self)))
         return message
+
+''' Вы указали, что этот класс не является датаклассом. 
+    Но мне кажется, что несмотря на то, что сутью этого класса
+    не является только хранение данных, его всё еще можно объявить 
+    датаклассом для упрощения написания кода'''
 
 
 @dataclass
@@ -50,10 +55,9 @@ class Training:
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
 
-        info_message = InfoMessage(self.__class__.__name__, self.duration,
-                                   self.get_distance(), self.get_mean_speed(),
-                                   self.get_spent_calories())
-        return (info_message)
+        return InfoMessage(self.__class__.__name__, self.duration,
+                           self.get_distance(), self.get_mean_speed(),
+                           self.get_spent_calories())
 
 
 class Running(Training):
@@ -77,6 +81,12 @@ class SportsWalking(Training):
     M_IN_SEC_SPEED_MULTIPLIER: ClassVar[float] = 0.278
     CM_IN_M: ClassVar[int] = 100
 
+    '''Тут вы указали, что эти данные не нужно здесь определять,
+        Но тогда я не понимаю, как мне их определять. Ведь height
+        не определяется в родительском классе, а значит тут один
+        выход - переопределить метод __init__. Я сделал это с помощью
+        датакласса для упрощения написания кода. Как мне поступить 
+        в этой ситуации правильнее?'''
     action: int
     duration: int
     weight: int
@@ -118,7 +128,7 @@ class Swimming(Training):
 
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
-    training_type: type.Dict[str, Training] = {'SWM': Swimming,
+    training_type: dict[str, type[Training]] = {'SWM': Swimming,
                                                'RUN': Running,
                                                'WLK': SportsWalking}
     training = training_type[workout_type](*data)
