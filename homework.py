@@ -22,9 +22,10 @@ class InfoMessage:
         message: str = (self.MESSAGE.format(**asdict(self)))
         return message
 
-''' Вы указали, что этот класс не является датаклассом. 
+
+''' Вы указали, что этот класс не является датаклассом.
     Но мне кажется, что несмотря на то, что сутью этого класса
-    не является только хранение данных, его всё еще можно объявить 
+    не является только хранение данных, его всё еще можно объявить
     датаклассом для упрощения написания кода'''
 
 
@@ -85,7 +86,7 @@ class SportsWalking(Training):
         Но тогда я не понимаю, как мне их определять. Ведь height
         не определяется в родительском классе, а значит тут один
         выход - переопределить метод __init__. Я сделал это с помощью
-        датакласса для упрощения написания кода. Как мне поступить 
+        датакласса для упрощения написания кода. Как мне поступить
         в этой ситуации правильнее?'''
     action: int
     duration: int
@@ -129,8 +130,8 @@ class Swimming(Training):
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
     training_type: dict[str, type[Training]] = {'SWM': Swimming,
-                                               'RUN': Running,
-                                               'WLK': SportsWalking}
+                                                'RUN': Running,
+                                                'WLK': SportsWalking}
     training = training_type[workout_type](*data)
     return training
 
