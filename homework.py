@@ -23,13 +23,6 @@ class InfoMessage:
         return message
 
 
-''' Вы указали, что этот класс не является датаклассом.
-    Но мне кажется, что несмотря на то, что сутью этого класса
-    не является только хранение данных, его всё еще можно объявить
-    датаклассом для упрощения написания кода'''
-
-
-@dataclass
 class Training:
     """Базовый класс тренировки."""
 
@@ -37,9 +30,13 @@ class Training:
     M_IN_KM: ClassVar[int] = 1000
     MIN_IN_HOUR: ClassVar[int] = 60
 
-    action: int
-    duration: int
-    weight: int
+    def __init__(self,
+                 action: int,
+                 duration: float,
+                 weight: float) -> None:
+        self.action = action
+        self.duration = duration
+        self.weight = weight
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
@@ -73,7 +70,6 @@ class Running(Training):
                 * self.duration * self.MIN_IN_HOUR)
 
 
-@dataclass
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
 
@@ -82,19 +78,13 @@ class SportsWalking(Training):
     M_IN_SEC_SPEED_MULTIPLIER: ClassVar[float] = 0.278
     CM_IN_M: ClassVar[int] = 100
 
-    '''Тут вы указали, что эти данные не нужно здесь определять,
-        Но тогда я не понимаю, как мне их определять. Ведь height
-        не определяется в родительском классе, а значит тут один
-        выход - переопределить метод __init__. Я сделал это с помощью
-        датакласса для упрощения написания кода. Как мне поступить
-        в этой ситуации правильнее?'''
-    action: int
-    duration: int
-    weight: int
-    height: int
-
-    def __post_init__(self):
-        self.height = self.height / self.CM_IN_M
+    def __init__(self,
+                 action: int,
+                 duration: float,
+                 weight: float,
+                 height: float) -> None:
+        super().__init__(action, duration, weight)
+        self.height = height / self.CM_IN_M
 
     def get_spent_calories(self) -> float:
         return ((self.WLK_FIRST_CALORIES_MULTUPLIER * self.weight
@@ -104,7 +94,6 @@ class SportsWalking(Training):
                 * self.weight) * self.duration * self.MIN_IN_HOUR)
 
 
-@dataclass
 class Swimming(Training):
     """Тренировка: плавание."""
 
@@ -112,11 +101,15 @@ class Swimming(Training):
     SWM_MEAN_SPEED_SHIFT: ClassVar[float] = 1.1
     SPEED_MULTIPLIER: ClassVar[int] = 2
 
-    action: int
-    duration: int
-    weight: int
-    length_pool: int
-    count_pool: int
+    def __init__(self,
+                 action: int,
+                 duration: float,
+                 weight: float,
+                 length_pool: float,
+                 count_pool: float) -> None:
+        super().__init__(action, duration, weight)
+        self.length_pool = length_pool
+        self.count_pool = count_pool
 
     def get_mean_speed(self) -> float:
         return (self.count_pool * self.length_pool
@@ -132,7 +125,10 @@ def read_package(workout_type: str, data: list) -> Training:
     training_type: dict[str, type[Training]] = {'SWM': Swimming,
                                                 'RUN': Running,
                                                 'WLK': SportsWalking}
-    training = training_type[workout_type](*data)
+    if workout_type in training_type:
+        training = training_type[workout_type](*data)
+    else:
+        raise ValueError
     return training
 
 
