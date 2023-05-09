@@ -128,7 +128,7 @@ def read_package(workout_type: str, data: list) -> Training:
     if workout_type in training_type:
         training = training_type[workout_type](*data)
     else:
-        raise ValueError
+        raise ValueError('No such trainig type')
     return training
 
 
